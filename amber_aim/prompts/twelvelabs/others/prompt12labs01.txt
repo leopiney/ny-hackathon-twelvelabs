@@ -1,0 +1,4 @@
+1. Summary of the main story in less than 8 sentences.
+2. Types of video styles include animation, film, 2D animation, documentary, and others.
+3. Total video length.
+4. The general color tone of the video.

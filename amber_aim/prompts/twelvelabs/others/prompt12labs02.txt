@@ -1,0 +1,2 @@
+5. The main characters face obstacles and reach the climax of the story with start/end timestamps, if there are more than 1 climax.
+6. Try to return the emotion parts of the story with start/end timestamps. (such as crying, laughing, and so on)

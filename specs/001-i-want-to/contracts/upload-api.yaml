@@ -1,0 +1,231 @@
+openapi: 3.1.0
+info:
+  title: Video Upload URL Generation API
+  description: |
+    FastAPI service that generates secure, time-limited AWS S3 presigned URLs for direct video uploads.
+
+    Clients request an upload URL, receive a signed URL with 30-minute expiration, and upload videos
+    directly to S3 without routing through the API server.
+  version: 1.0.0
+  contact:
+    name: NY TwelveLabs Hackathon Team
+  license:
+    name: MIT
+
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+  - url: https://api.example.com
+    description: Production server
+
+paths:
+  /upload:
+    post:
+      summary: Generate presigned S3 upload URL
+      description: |
+        Creates a unique S3 presigned URL for uploading a video file directly to S3.
+
+        The endpoint:
+        - Generates a UUID for unique file identification
+        - Preserves the original file extension
+        - Returns a presigned URL valid for 30 minutes (configurable)
+        - Organizes files under a base path (e.g., upload/{uuid}.ext)
+
+        **No authentication required** - this is a public endpoint.
+      operationId: generateUploadURL
+      tags:
+        - Upload
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UploadURLRequest"
+            examples:
+              mp4_video:
+                summary: MP4 video file
+                value:
+                  filename: "my_video.mp4"
+              mov_video:
+                summary: MOV video file
+                value:
+                  filename: "recording.mov"
+      responses:
+        "200":
+          description: Presigned URL generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UploadURLResponse"
+              examples:
+                success:
+                  summary: Successful response
+                  value:
+                    upload_url: "https://my-bucket.s3.amazonaws.com/upload/550e8400-e29b-41d4-a716-446655440000.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=..."
+                    s3_path: "upload/550e8400-e29b-41d4-a716-446655440000.mp4"
+                    expires_in: 1800
+                    expires_at: "2025-10-04T12:30:00Z"
+        "400":
+          description: Invalid request (e.g., missing extension, invalid filename)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                missing_extension:
+                  summary: Filename without extension
+                  value:
+                    detail: "filename must include extension"
+                    error_code: "INVALID_FILENAME"
+                empty_filename:
+                  summary: Empty filename
+                  value:
+                    detail: "filename cannot be empty"
+                    error_code: "INVALID_FILENAME"
+        "500":
+          description: Internal server error (e.g., S3 service unavailable)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                s3_error:
+                  summary: S3 service error
+                  value:
+                    detail: "Failed to generate upload URL"
+                    error_code: "S3_SERVICE_ERROR"
+        "503":
+          description: Service unavailable (AWS S3 unreachable)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                service_unavailable:
+                  summary: S3 temporarily unavailable
+                  value:
+                    detail: "S3 service temporarily unavailable"
+                    error_code: "S3_SERVICE_ERROR"
+
+  /health:
+    get:
+      summary: Health check endpoint
+      description: Returns service health status
+      operationId: healthCheck
+      tags:
+        - Health
+      responses:
+        "200":
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [healthy]
+                  timestamp:
+                    type: string
+                    format: date-time
+              example:
+                status: "healthy"
+                timestamp: "2025-10-04T12:00:00Z"
+
+components:
+  schemas:
+    UploadURLRequest:
+      type: object
+      required:
+        - filename
+      properties:
+        filename:
+          type: string
+          description: |
+            Original filename with extension. The extension will be preserved in the S3 path.
+            Must contain at least one dot (.) to identify the extension.
+          minLength: 1
+          maxLength: 255
+          examples:
+            - "video.mp4"
+            - "recording.mov"
+            - "screencast.avi"
+          pattern: '^.+\..+$'
+      example:
+        filename: "my_video.mp4"
+
+    UploadURLResponse:
+      type: object
+      required:
+        - upload_url
+        - s3_path
+        - expires_in
+        - expires_at
+      properties:
+        upload_url:
+          type: string
+          format: uri
+          description: |
+            AWS S3 presigned URL for uploading the video file.
+            Use HTTP PUT method to upload the file to this URL.
+          examples:
+            - "https://my-bucket.s3.amazonaws.com/upload/550e8400-e29b-41d4-a716-446655440000.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&..."
+        s3_path:
+          type: string
+          description: |
+            S3 object key where the video will be stored.
+            Format: {base_path}/{uuid}.{extension}
+          pattern: '^[a-z0-9_/-]+/[0-9a-f-]+\.[a-zA-Z0-9]+$'
+          examples:
+            - "upload/550e8400-e29b-41d4-a716-446655440000.mp4"
+        expires_in:
+          type: integer
+          description: |
+            Number of seconds until the presigned URL expires.
+            Default: 1800 (30 minutes)
+          minimum: 1
+          examples:
+            - 1800
+        expires_at:
+          type: string
+          format: date-time
+          description: |
+            ISO 8601 timestamp (UTC) when the presigned URL expires.
+            After this time, the URL will no longer accept uploads.
+          examples:
+            - "2025-10-04T12:30:00Z"
+      example:
+        upload_url: "https://my-bucket.s3.amazonaws.com/upload/550e8400-e29b-41d4-a716-446655440000.mp4?X-Amz-Algorithm=..."
+        s3_path: "upload/550e8400-e29b-41d4-a716-446655440000.mp4"
+        expires_in: 1800
+        expires_at: "2025-10-04T12:30:00Z"
+
+    ErrorResponse:
+      type: object
+      required:
+        - detail
+      properties:
+        detail:
+          type: string
+          description: Human-readable error message
+          examples:
+            - "filename must include extension"
+            - "Failed to generate upload URL"
+        error_code:
+          type: string
+          description: Machine-readable error code
+          enum:
+            - INVALID_FILENAME
+            - S3_SERVICE_ERROR
+            - CONFIGURATION_ERROR
+          examples:
+            - "INVALID_FILENAME"
+      example:
+        detail: "filename must include extension"
+        error_code: "INVALID_FILENAME"
+
+tags:
+  - name: Upload
+    description: Video upload URL generation endpoints
+  - name: Health
+    description: Service health monitoring

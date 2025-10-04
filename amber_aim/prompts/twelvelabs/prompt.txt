@@ -1,0 +1,36 @@
+1. Summary of the main story in less than 8 sentences.
+2. Types of video styles include animation, film, 2D animation, documentary, and others.
+3. Total video length.
+4. The general color tone of the video.
+5. How many obstacles does this character face within the video, what is the obstacle to duration ratio with start/end timestamps.
+6. Try to return the emotion parts of the story with start/end timestamps (such as crying, laughing, and so on).
+7. Segment labels (e.g., intro, story, tip, recap, CTA) with start/end timestamps.
+8. Add segment label based on the actions of the relevant segments.
+9. Identify natural breakpoints: Insert ad breaks during natural transitions, such as at the end of a scene, or a change in topic. Avoid placing ads in the middle of a sentence or during a key action to prevent viewer frustration.
+10. Scene-level summaries with tone classification (e.g., relaxing, urgent, informative).
+
+NARRATIVE STRUCTURE ANALYSIS:
+11. Three-Act Structure: Identify which act each segment belongs to:
+    - Act 1 (Setup): Character/world introduction, establishing normalcy
+    - Act 2 (Confrontation): Obstacles, rising tension, complications
+    - Act 3 (Resolution): Climax, resolution, conclusion
+12. Narrative Tropes: Label key story beats with timestamps:
+    - Narrative Hook: Opening that grabs attention (first 10-30 seconds)
+    - Inciting Incident: Event that disrupts normalcy and starts the journey
+    - Rising Action: Escalating challenges and complications
+    - Midpoint: Major revelation or shift in story direction
+    - Climax: Highest point of tension/conflict
+    - Resolution: How conflicts are resolved
+    - Denouement: Final wrap-up, new equilibrium
+13. Hero's Journey Stages (if applicable): Map segments to the 12-stage framework:
+    - Ordinary World, Call to Adventure, Refusal, Meeting Mentor
+    - Crossing Threshold, Tests/Allies/Enemies, Approach, Ordeal
+    - Reward, Road Back, Resurrection, Return with Elixir
+14. Emotional Arc: Track the emotional trajectory with timestamps:
+    - Positive moments (triumph, joy, relief)
+    - Negative moments (setback, loss, fear)
+    - Turning points (emotional shifts)
+15. Narrative Techniques: Identify non-linear storytelling:
+    - Flashbacks (past events shown)
+    - Flashforwards (future events hinted/shown)
+    - Story within story (nested narratives)

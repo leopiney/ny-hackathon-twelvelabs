@@ -1,0 +1,30 @@
+# Instructions
+
+Given the detailed video contents, please:
+Suggest how many ads should be inserted into, so that it affects the viewer the least. Return the number of the as [num]
+
+Video and ad synergy: the types of ad could be inserted and work well with this ad. The rule will be based on the favorability and consideration of buying. Return us the suitable ad type keywords for searching.
+
+Suggest top [num] ad insertion points with start/end timestamps with justification.
+
+The rules will be based on 
+1. the natural breakpoints
+2. we don’t put ads in the very beginning, need to let viewers to indulge in the video first.
+3. most aligned with the ad contents, natural breakpoints
+4. segment labels
+5. by predicted viewer receptiveness.
+
+# Context
+
+{context}
+
+# Output
+
+Output a json file that includes:
+
+1. Simulate viewer reaction to each ad slot.
+2. Recommend improvements to timing or tone alignment.
+3. the reasons for each ad to be inserted there.
+4.	Simulate viewer reactions on to each ad slot.Behavioral Reacts:
+such as Click-through; Rewind; Share; Comment
+5.	Recommend improvements to timing or tone alignment.
