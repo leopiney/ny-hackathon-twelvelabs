@@ -8,6 +8,18 @@ An AI-powered platform that analyzes viewer reactions and emotional beats in vid
 
 - **GitHub Repository**: https://github.com/leopiney/ny-hackathon-twelvelabs
 - **Devpost Submission**: https://devpost.com/software/vibe-point
+- **Hackathon**: [Generative AI in Advertising Hackathon - AdWeek NYC](https://gen-ai-advertising-nyc.devpost.com/)
+
+## About the Hackathon
+
+VibePoint was built during the **Generative AI in Advertising Hackathon** at AdWeek NYC (October 4-5, 2025), hosted at Betaworks in New York City. The hackathon challenged participants to transform the $800B advertising industry with AI, focusing on:
+
+- Creative & Production Workflows
+- Brand Safety & Suitability
+- Identity & Contextual Advertising
+- Performance Insights & Analytics
+
+Our project addresses the **Performance Insights & Analytics** category by leveraging TwelveLabs' video understanding APIs to create an enterprise-ready solution that connects emotional context with advertising effectiveness.
 
 ## What It Does
 
