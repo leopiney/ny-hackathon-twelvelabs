@@ -1,96 +1,348 @@
+<div align="center">
+
+<img src="https://d112y698adiu2z.cloudfront.net/photos/production/software_thumbnail_photos/003/820/633/datas/medium.png" alt="VibePoint Logo" width="200"/>
+
 # VibePoint Ad Tool
 
-> Helping creators intelligently insert ads in online videos and vibes
+### *Helping creators intelligently insert ads in online videos and vibes*
+
+[![Devpost](https://img.shields.io/badge/Devpost-003E54?style=for-the-badge&logo=devpost&logoColor=white)](https://devpost.com/software/vibe-point)
+[![YouTube](https://img.shields.io/badge/Demo-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/KrvGulPdHGQ)
+[![TwelveLabs](https://img.shields.io/badge/Built_with-TwelveLabs-6366f1?style=for-the-badge)](https://www.twelvelabs.io/)
 
 An AI-powered platform that analyzes viewer reactions and emotional beats in videos to dynamically select and place contextually relevant ads.
 
-## Links
+[🚀 Watch Demo](https://youtu.be/KrvGulPdHGQ) • [📝 Devpost](https://devpost.com/software/vibe-point) • [🏆 Hackathon](https://gen-ai-advertising-nyc.devpost.com/)
 
-- **GitHub Repository**: https://github.com/leopiney/ny-hackathon-twelvelabs
-- **Devpost Submission**: https://devpost.com/software/vibe-point
-- **Hackathon**: [Generative AI in Advertising Hackathon - AdWeek NYC](https://gen-ai-advertising-nyc.devpost.com/)
+</div>
 
-## About the Hackathon
+---
 
-VibePoint was built during the **Generative AI in Advertising Hackathon** at AdWeek NYC (October 4-5, 2025), hosted at Betaworks in New York City. The hackathon challenged participants to transform the $800B advertising industry with AI, focusing on:
+## 🎥 Demo Video
 
-- Creative & Production Workflows
-- Brand Safety & Suitability
-- Identity & Contextual Advertising
-- Performance Insights & Analytics
+<div align="center">
+  <a href="https://youtu.be/KrvGulPdHGQ">
+    <img src="https://img.youtube.com/vi/KrvGulPdHGQ/maxresdefault.jpg" alt="VibePoint Demo" width="600"/>
+  </a>
+  <p><em>Click to watch our full demo on YouTube</em></p>
+</div>
 
-Our project addresses the **Identity & Contextual Advertising** category by leveraging TwelveLabs' video understanding APIs to create an enterprise-ready solution that connects emotional context with advertising effectiveness.
+---
 
-## What It Does
+## 🏆 About the Hackathon
 
-VibePoint uses a dual-agent system to revolutionize video advertising by:
+<table>
+<tr>
+<td width="60%">
 
-- **Analyzing Emotional Context**: Detecting viewer reactions and emotional beats in videos using 12Labs' advanced video analysis
-- **Smart Categorization**: Organizing content into emotional moments and segments
-- **Dynamic Ad Placement**: Selecting and placing ads based on emotional context rather than traditional demographics
-- **Engagement Prediction**: Simulating viewer responses to predict ad performance
-- **Detailed Analytics**: Providing comprehensive ad performance insights through an interactive dashboard
+**Generative AI in Advertising Hackathon**
+📍 Betaworks, New York City
+📅 October 4-5, 2025
+💰 AdWeek NYC
 
-## The Problem
+VibePoint was built to transform the **$800B advertising industry** with AI, addressing the **Identity & Contextual Advertising** challenge.
 
-Modern video advertising faces two critical challenges:
-- Ads are often irrelevant and disruptive to viewer experience
-- Current targeting solutions fail to capture emotional engagement and context
+🎯 **Our Focus**: Leveraging TwelveLabs' video understanding APIs to create an enterprise-ready solution that connects emotional context with advertising effectiveness.
 
-## Our Solution
+</td>
+<td width="40%">
 
-VibePoint bridges the gap between content creators and advertisers by ensuring ads align with the emotional tone of content, creating a more natural and effective advertising experience.
+**Challenge Categories:**
+- 🎨 Creative & Production
+- 🛡️ Brand Safety & Suitability
+- 🎯 **Identity & Contextual Ads**
+- 📊 Performance Insights
 
-### Architecture
+</td>
+</tr>
+</table>
 
-1. **Emotional Extraction Layer** (12Labs) - Analyzes video content for emotional signals
-2. **Segment Labeling Engine** - Categorizes content into emotional moments
-3. **AI-Powered Ad Matching** (GPT-based) - Matches ads to emotional context
-4. **Viewer Response Simulation** - Predicts emotional resonance and engagement
-5. **Analytics Dashboard** - Visualizes performance metrics and insights
+---
 
-## Key Accomplishments
+## ✨ What It Does
 
-- ✅ Integrated 12Labs' emotional analysis with GPT-based ad matching
-- ✅ Built a simulation engine that predicts emotional resonance
-- ✅ Created an ethical system that aligns brands with content values
-- ✅ Proved that emotional context is more powerful than demographic targeting
+<div align="center">
 
-## What's Next
+```mermaid
+graph LR
+    A[📹 Video Upload] --> B[🧠 TwelveLabs Analysis]
+    B --> C[😊 Emotional Extraction]
+    C --> D[🏷️ Segment Labeling]
+    D --> E[🤖 AI Ad Matching]
+    E --> F[📊 Analytics Dashboard]
+```
 
-- 🎯 Enhance precision of emotional detection algorithms
-- 📈 Expand training across diverse content types and genres
-- 🤝 Improve ad-content matching with advanced ML models
-- 🚀 Scale the platform with robust API integrations
-- 💼 Seek strategic partnerships and investment opportunities
+</div>
 
-## Technology Stack
+VibePoint uses a **dual-agent system** to revolutionize video advertising:
 
-- **Frontend**: Next.js
-- **Backend**: Python, FastAPI
-- **Video Analysis**: TwelveLabs API
-- **AI Matching**: GPT-based algorithms
-- **Cloud Storage**: AWS S3
+| Feature | Description |
+|---------|-------------|
+| 🎭 **Emotional Analysis** | Detecting viewer reactions and emotional beats using 12Labs' advanced video understanding |
+| 🏷️ **Smart Categorization** | Organizing content into emotional moments and segments |
+| 🎯 **Dynamic Ad Placement** | Selecting ads based on emotional context, not demographics |
+| 📈 **Engagement Prediction** | Simulating viewer responses to predict ad performance |
+| 📊 **Analytics Dashboard** | Comprehensive performance insights through an interactive interface |
 
-## Project Structure
+---
 
-- **amber_aim/**: FastAPI backend service for video processing, emotional analysis, and ad matching
-- **amber_aim_web/**: Next.js web application with analytics dashboard
+## 💡 The Problem & Solution
 
-## Getting Started
+<table>
+<tr>
+<td width="50%">
 
-See the individual README files in each directory for setup instructions:
+### ❌ The Problem
 
-- [Backend Setup (amber_aim)](./amber_aim/README.md)
-- [Frontend Setup (amber_aim_web)](./amber_aim_web/README.md)
+Modern video advertising faces critical challenges:
 
-## Team
+- 🚫 **Irrelevant ads** disrupt viewer experience
+- 📉 **Poor targeting** fails to capture emotional engagement
+- 💔 **Context blindness** ignores content emotional tone
+- 📊 **Weak metrics** don't measure true resonance
 
-- Rob Kleiman
-- Sarah Yu
-- Leonardo Piñeyro
-- Lan Mi
+</td>
+<td width="50%">
 
-## License
+### ✅ Our Solution
 
-MIT
+VibePoint bridges the gap between creators and advertisers:
+
+- 🎯 **Context-aware** ad placement
+- 😊 **Emotional alignment** with content
+- 🤝 **Natural integration** enhances experience
+- 📊 **Resonance metrics** measure true impact
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🏗️ Architecture
+
+<div align="center">
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                      📹 Video Input Layer                        │
+└───────────────────────────────┬─────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│              🧠 Emotional Extraction Layer (12Labs)              │
+│                  Analyzes emotional signals                      │
+└───────────────────────────────┬─────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                  🏷️ Segment Labeling Engine                      │
+│              Categorizes emotional moments                       │
+└───────────────────────────────┬─────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│               🤖 AI-Powered Ad Matching (GPT)                    │
+│            Matches ads to emotional context                      │
+└───────────────────────────────┬─────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│              📈 Viewer Response Simulation                       │
+│          Predicts emotional resonance                            │
+└───────────────────────────────┬─────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                  📊 Analytics Dashboard                          │
+│           Visualizes performance metrics                         │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+</div>
+
+---
+
+## 🎉 Key Accomplishments
+
+<div align="center">
+
+| Achievement | Impact |
+|------------|--------|
+| 🔗 **Integration Excellence** | Seamlessly connected 12Labs emotional analysis with GPT-based matching |
+| 🎯 **Predictive Power** | Built simulation engine that accurately predicts emotional resonance |
+| 🤝 **Ethical AI** | Created system that aligns brands with content values |
+| 💡 **Paradigm Shift** | Proved emotional context beats demographic targeting |
+
+</div>
+
+---
+
+## 🚀 What's Next
+
+<table>
+<tr>
+<td width="33%">
+
+### 🎯 Short Term
+- Enhance emotional detection precision
+- Expand content type coverage
+- Improve matching algorithms
+
+</td>
+<td width="33%">
+
+### 📈 Medium Term
+- Scale platform infrastructure
+- Build robust API integrations
+- Add real-time processing
+
+</td>
+<td width="34%">
+
+### 💼 Long Term
+- Strategic partnerships
+- Enterprise deployment
+- Industry transformation
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🛠️ Technology Stack
+
+<div align="center">
+
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![AWS](https://img.shields.io/badge/AWS_S3-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white)
+![OpenAI](https://img.shields.io/badge/OpenAI_GPT-412991?style=for-the-badge&logo=openai&logoColor=white)
+
+</div>
+
+<table>
+<tr>
+<td width="50%">
+
+**Frontend**
+- ⚛️ Next.js 15 with App Router
+- 📘 TypeScript
+- 🎨 Tailwind CSS
+- 🧩 shadcn/ui Components
+
+</td>
+<td width="50%">
+
+**Backend**
+- 🐍 Python 3.12+
+- ⚡ FastAPI
+- 🎥 TwelveLabs Video API
+- 🤖 OpenAI GPT-4
+- ☁️ AWS S3
+
+</td>
+</tr>
+</table>
+
+---
+
+## 📁 Project Structure
+
+```
+ny-hackathon-twelvelabs/
+├── 🔧 amber_aim/              # FastAPI Backend
+│   ├── Video processing
+│   ├── Emotional analysis (12Labs)
+│   ├── AI ad matching (GPT)
+│   └── S3 upload management
+│
+└── 🎨 amber_aim_web/          # Next.js Frontend
+    ├── Analytics dashboard
+    ├── Video player
+    ├── Upload interface
+    └── Ad placement visualization
+```
+
+---
+
+## 🚀 Getting Started
+
+<table>
+<tr>
+<td width="50%">
+
+### 🔧 Backend Setup
+
+```bash
+cd amber_aim
+uv pip install -e .
+uvicorn amber_aim.main:app --reload
+```
+
+📖 [Detailed Backend Instructions](./amber_aim/README.md)
+
+</td>
+<td width="50%">
+
+### 🎨 Frontend Setup
+
+```bash
+cd amber_aim_web
+npm install
+npm run dev
+```
+
+📖 [Detailed Frontend Instructions](./amber_aim_web/README.md)
+
+</td>
+</tr>
+</table>
+
+---
+
+## 👥 Team
+
+<div align="center">
+
+<table>
+<tr>
+<td align="center">
+<strong>Rob Kleiman</strong>
+</td>
+<td align="center">
+<strong>Sarah Yu</strong>
+</td>
+<td align="center">
+<strong>Leonardo Piñeyro</strong>
+</td>
+<td align="center">
+<strong>Lan Mi</strong>
+</td>
+</tr>
+</table>
+
+Built with ❤️ at AdWeek NYC 2025
+
+</div>
+
+---
+
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) for details
+
+---
+
+<div align="center">
+
+**⭐ If you found this project interesting, please give it a star!**
+
+[🚀 Watch Demo](https://youtu.be/KrvGulPdHGQ) • [📝 Devpost](https://devpost.com/software/vibe-point) • [🏆 Hackathon](https://gen-ai-advertising-nyc.devpost.com/)
+
+</div>
