@@ -19,7 +19,7 @@ VibePoint was built during the **Generative AI in Advertising Hackathon** at AdW
 - Identity & Contextual Advertising
 - Performance Insights & Analytics
 
-Our project addresses the **Performance Insights & Analytics** category by leveraging TwelveLabs' video understanding APIs to create an enterprise-ready solution that connects emotional context with advertising effectiveness.
+Our project addresses the **Identity & Contextual Advertising** category by leveraging TwelveLabs' video understanding APIs to create an enterprise-ready solution that connects emotional context with advertising effectiveness.
 
 ## What It Does
 
