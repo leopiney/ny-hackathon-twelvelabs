@@ -178,13 +178,17 @@ class TwelveLabsService:
         prompts = [
             (Path(path).stem, Path(path).read_text())
             for path in sorted(
-                Path(__file__).parent.parent.parent.glob("prompts/twelvelabs/*.txt")
+                Path(__file__).parent.parent.parent.parent.glob(
+                    "prompts/twelvelabs/*.txt"
+                )
             )
         ]
         prompts = [
             (Path(path).stem, Path(path).read_text())
             for path in sorted(
-                Path(__file__).parent.parent.parent.glob("prompts/twelvelabs/*.txt")
+                Path(__file__).parent.parent.parent.parent.glob(
+                    "prompts/twelvelabs/*.txt"
+                )
             )
         ]
 
@@ -331,6 +335,11 @@ class TwelveLabsService:
 
             time.sleep(random.random() * 3)
 
+            print("--------------------------------")
+            print("SEARH QUERY: ", query_text)
+            print("INDEX ID: ", self.ads_index_id)
+            print("--------------------------------")
+
             response = self.client.search.query(
                 index_id=self.ads_index_id,
                 search_options=["visual", "audio"],
@@ -341,7 +350,11 @@ class TwelveLabsService:
             )
 
             results = []
-            for item in response:
+            for i, item in enumerate(response):
+                logger.info(
+                    f"Got ad item #{i}",
+                )
+
                 if item.id and item.clips:  # Grouped by video
                     clips = [
                         AdClip(
@@ -354,7 +367,7 @@ class TwelveLabsService:
                             transcription=getattr(clip, "transcription", None),
                         )
                         for clip in item.clips
-                        if clip.score is not None and clip.score > 0.7
+                        if clip.score is not None and clip.score > 0.5
                     ]
                     results.append(AdSearchResult(id=item.id, clips=clips))
 
@@ -362,6 +375,8 @@ class TwelveLabsService:
                 "Ad search completed",
                 extra={"query": query_text, "result_count": len(results)},
             )
+
+            results.sort(key=lambda x: x.average_score, reverse=True)
 
             return results
 

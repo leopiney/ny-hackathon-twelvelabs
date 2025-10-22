@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { VideoTimeline } from "@/components/video-timeline";
+import { VideoPlayerSection } from "@/components/video-player-section";
 import { AdPlacementCard } from "@/components/ad-placement-card";
 import { AnalyzeVideoSection } from "@/components/analyze-video-section";
 import { AnalyzeButton } from "@/components/analyze-button";
@@ -61,33 +61,32 @@ export default async function VideoDetailsPage({
   // Hardcoded ad index ID
   const adIndexId = "68e185ef64ff05606e152638";
 
-  // Fetch ad videos for each suggested ad
-  const adVideos = await Promise.all(
-    (suggestedAds?.suggested_ads || []).map(async (ad) => {
+  // Transform placements - for each placement, get the corresponding ad
+  const transformedAds = await Promise.all(
+    (suggestedAds?.placements || []).map(async (placement, idx) => {
+      const ad = suggestedAds?.suggested_ads?.[idx];
+      if (!ad) return null;
+
+      // Fetch the ad video
+      let adVideo = null;
       if (ad.id) {
         try {
-          return await fetchVideo(adIndexId, ad.id);
+          adVideo = await fetchVideo(adIndexId, ad.id);
         } catch (error) {
           console.log(`Failed to fetch ad video ${ad.id}`);
-          return null;
         }
       }
-      return null;
-    })
-  );
 
-  // Transform suggested ads to match with placements in the same order
-  const transformedAds = suggestedAds?.suggested_ads.map((ad, idx) => {
-    const placement = suggestedAds.placements?.[idx];
-    return {
-      ...ad,
-      placement_timestamp: placement?.timestamp || ad.clips?.[0]?.start || 0,
-      ad_video_id: ad.id,
-      score: ad.clips?.[0]?.score, // Include the score from the first clip
-      adVideo: adVideos[idx], // Include the fetched ad video data
-      placement: placement, // Include full placement data
-    };
-  });
+      return {
+        ...ad,
+        placement_timestamp: placement.timestamp,
+        ad_video_id: ad.id,
+        score: ad.clips?.[0]?.score,
+        adVideo: adVideo,
+        placement: placement,
+      };
+    })
+  ).then((ads) => ads.filter((ad) => ad !== null)); // Remove any null entries
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-950 dark:to-gray-900">
@@ -115,49 +114,44 @@ export default async function VideoDetailsPage({
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="space-y-8">
+      <main className="container mx-auto px-4 py-4">
+        <div className="space-y-4">
           {/* Video Player Section */}
           <Card className="overflow-hidden">
-            <div className="relative aspect-video bg-black">
-              {video.hls?.video_url ? (
-                <video
-                  controls
-                  className="h-full w-full"
-                  poster={video.hls.thumbnail_urls?.[0]}
-                >
-                  <source
-                    src={video.hls.video_url}
-                    type="application/x-mpegURL"
-                  />
-                  Your browser does not support the video tag.
-                </video>
-              ) : (
+            {video.hls?.video_url ? (
+              <VideoPlayerSection
+                videoUrl={video.hls.video_url}
+                posterUrl={video.hls.thumbnail_urls?.[0]}
+                duration={videoDuration}
+                suggestedAds={transformedAds}
+              />
+            ) : (
+              <div className="relative bg-black max-h-[400px] flex items-center justify-center">
                 <div className="flex h-full items-center justify-center text-white">
                   <div className="text-center">
                     <div className="mb-4 inline-block h-12 w-12 animate-spin rounded-full border-4 border-blue-500 border-t-transparent" />
                     <p className="text-sm">Processing video...</p>
                   </div>
                 </div>
-              )}
-            </div>
-            <CardContent className="p-6">
+              </div>
+            )}
+            <CardContent className="p-4">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
                     {video.system_metadata?.filename ||
                       video.metadata?.filename ||
                       `Video ${video.id}`}
                   </h2>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 font-mono">
+                  <p className="text-xs text-gray-600 dark:text-gray-400 font-mono">
                     Video ID: {video.id}
                   </p>
                 </div>
                 <AnalyzeButton videoId={videoId} />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
-                <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-950 rounded-lg">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
+                <div className="flex items-center gap-2 p-2 bg-blue-50 dark:bg-blue-950 rounded-lg">
                   <Clock className="h-5 w-5 text-blue-600" />
                   <div>
                     <p className="text-xs text-gray-600 dark:text-gray-400">
@@ -172,7 +166,7 @@ export default async function VideoDetailsPage({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                <div className="flex items-center gap-2 p-2 bg-blue-50 dark:bg-blue-950 rounded-lg">
                   <Calendar className="h-5 w-5 text-blue-600" />
                   <div>
                     <p className="text-xs text-gray-600 dark:text-gray-400">
@@ -184,7 +178,7 @@ export default async function VideoDetailsPage({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                <div className="flex items-center gap-2 p-2 bg-blue-50 dark:bg-blue-950 rounded-lg">
                   <div className="h-5 w-5 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs">
                     ✓
                   </div>
@@ -201,27 +195,19 @@ export default async function VideoDetailsPage({
             </CardContent>
           </Card>
 
-          {/* Timeline - Only show if we have suggested ads */}
-          {transformedAds && transformedAds.length > 0 && (
-            <VideoTimeline
-              duration={videoDuration}
-              suggestedAds={transformedAds}
-            />
-          )}
-
           {/* Recommended Ad Placements */}
           {transformedAds && transformedAds.length > 0 && (
             <div>
-              <div className="mb-6">
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+              <div className="mb-3">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
                   Recommended Ad Placements
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-xs text-gray-600 dark:text-gray-400">
                   AI-powered ad suggestions based on video content analysis
                 </p>
               </div>
 
-              <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
+              <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2">
                 {transformedAds.map((ad, index) => (
                   <AdPlacementCard key={index} ad={ad} index={index} />
                 ))}

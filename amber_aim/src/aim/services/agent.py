@@ -24,6 +24,14 @@ def find_placements(prompt: str) -> PlacementResult:
 
     client = OpenAI()
 
+    print("--------------------------------")
+    print("placements_agent_prompt\n\n")
+    print(placements_agent_prompt)
+    print("--------------------------------")
+    print("prompt\n\n")
+    print(prompt)
+    print("--------------------------------")
+
     logger.info("Running OpenAI analysis")
     response = client.beta.chat.completions.parse(
         model="gpt-5-mini",
@@ -57,6 +65,16 @@ async def find_best_ads(
     Returns:
         AdSearchResponse containing search results
     """
+    # Check if results already exist in S3
+    s3_path = f"results/ads_search_{video_id}.json"
+    existing_results = s3_service.download_json_file(s3_path)
+
+    if existing_results is not None:
+        logger.info(f"Found existing results in S3: {s3_path}")
+        return AdSearchResponse.model_validate(existing_results)
+
+    logger.info("No existing results found in S3, proceeding with ad search")
+
     # Track all search results
     all_search_results: list[AdSearchResult] = []
     all_queries: list[str] = []
@@ -140,6 +158,10 @@ Placement Details:
     prompt = f"""{context}
 
 Based on this video analysis, please search for relevant ads using the search_ads tool. Make multiple searches with different query strategies to find the most appropriate advertisements for this content."""
+
+    print("--------------------------------")
+    print(prompt)
+    print("--------------------------------")
 
     # Create agent with search tool
     agent = Agent(

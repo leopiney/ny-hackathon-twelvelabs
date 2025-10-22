@@ -4,6 +4,7 @@ import logging
 from datetime import datetime, timezone
 from typing import Literal, Any
 
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from twelvelabs import IndexSchema, VideoVector
@@ -20,6 +21,8 @@ from aim.services.twelve_labs_service import (
     TwelveLabsService,
     TwelveLabsServiceError,
 )
+
+load_dotenv()
 
 # Load settings and setup logging
 settings = Settings()
