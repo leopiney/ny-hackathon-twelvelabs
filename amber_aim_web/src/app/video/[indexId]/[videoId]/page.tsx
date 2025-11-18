@@ -165,7 +165,7 @@ export default async function VideoDetailsPage({
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           {/* Left Column: Video Player & Timeline */}
-          <div className="lg:col-span-4 space-y-4">
+          <div className="lg:col-span-4 space-y-4 lg:sticky lg:top-20 lg:self-start lg:max-h-screen lg:overflow-y-auto">
             <Card className="overflow-hidden">
               {video.hls?.video_url ? (
                 <div className="w-full max-w-full">
