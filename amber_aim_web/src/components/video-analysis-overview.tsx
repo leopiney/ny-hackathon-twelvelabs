@@ -2,7 +2,6 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { PlacementResult } from "@/lib/types";
-import { ScrollArea } from "@/components/ui/scroll-area"; // Assuming we might add this, but for now standard div overflow
 
 interface VideoAnalysisOverviewProps {
   result: PlacementResult;

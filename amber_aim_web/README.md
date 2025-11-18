@@ -25,7 +25,7 @@ A modern video analytics dashboard built with Next.js 15, featuring AI-powered v
 ### Prerequisites
 
 - Node.js 20+
-- npm or pnpm
+- pnpm (or npm)
 - Running instance of the Amber AIM backend API (default: http://localhost:8000)
 
 ### Installation
@@ -33,7 +33,7 @@ A modern video analytics dashboard built with Next.js 15, featuring AI-powered v
 1. Install dependencies:
 
 ```bash
-npm install
+pnpm install
 ```
 
 2. Create a `.env.local` file:
@@ -54,7 +54,7 @@ NEXT_PUBLIC_API_URL=http://localhost:8000
 Run the development server:
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
@@ -64,13 +64,13 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 Build for production:
 
 ```bash
-npm run build
+pnpm build
 ```
 
 Start the production server:
 
 ```bash
-npm start
+pnpm start
 ```
 
 ## Project Structure
@@ -160,11 +160,11 @@ The application uses a custom blue color theme:
 
 ## Scripts
 
-- `npm run dev` - Start development server with Turbopack
-- `npm run build` - Build for production
-- `npm start` - Start production server
-- `npm run lint` - Run Biome linter
-- `npm run format` - Format code with Biome
+- `pnpm dev` - Start development server with Turbopack
+- `pnpm build` - Build for production
+- `pnpm start` - Start production server
+- `pnpm lint` - Run Biome linter
+- `pnpm format` - Format code with Biome
 
 ## License
 

@@ -3,7 +3,7 @@
 ## 1. Install Dependencies
 
 ```bash
-npm install
+pnpm install
 ```
 
 ## 2. Configure Environment
@@ -27,7 +27,7 @@ echo "NEXT_PUBLIC_API_URL=https://your-backend-url.com" > .env.local
 ## 3. Start Development Server
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 The application will be available at http://localhost:3000
@@ -120,8 +120,8 @@ Open http://localhost:3000 in your browser. You should see:
 To build for production:
 
 ```bash
-npm run build
-npm start
+pnpm build
+pnpm start
 ```
 
 The production server will run on http://localhost:3000 by default.
