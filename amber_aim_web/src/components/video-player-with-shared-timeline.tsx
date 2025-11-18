@@ -6,19 +6,19 @@ import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import type { SuggestedAd } from "@/lib/types";
 
-interface VideoPlayerSectionProps {
+interface VideoPlayerWithSharedTimelineProps {
   videoUrl: string;
   posterUrl?: string;
   duration: number;
   suggestedAds: SuggestedAd[];
 }
 
-export function VideoPlayerSection({
+export function VideoPlayerWithSharedTimeline({
   videoUrl,
   posterUrl,
   duration,
   suggestedAds,
-}: VideoPlayerSectionProps) {
+}: VideoPlayerWithSharedTimelineProps) {
   const mainVideoRef = useRef<HTMLVideoElement>(null);
   const adVideoRef = useRef<HTMLVideoElement>(null);
   const [currentTime, setCurrentTime] = useState(0);
@@ -27,9 +27,7 @@ export function VideoPlayerSection({
   const [currentAd, setCurrentAd] = useState<SuggestedAd | null>(null);
   const [skipCountdown, setSkipCountdown] = useState(5);
   const [canSkip, setCanSkip] = useState(false);
-  const [processedAdTimestamps, setProcessedAdTimestamps] = useState<
-    Set<number>
-  >(new Set());
+  const [processedAdTimestamps, setProcessedAdTimestamps] = useState<Set<number>>(new Set());
   const mainVideoTimeBeforeAd = useRef<number>(0);
 
   // Sort ads by timestamp for easier checking
@@ -43,10 +41,11 @@ export function VideoPlayerSection({
 
     const handleTimeUpdate = () => {
       if (!isPlayingAd) {
-        setCurrentTime(video.currentTime);
+        const newTime = video.currentTime;
+        setCurrentTime(newTime);
 
         // Check if we've reached an ad placement timestamp
-        const currentSecond = video.currentTime;
+        const currentSecond = newTime;
         for (const ad of sortedAds) {
           const adTimestamp = ad.placement_timestamp || 0;
 
@@ -58,12 +57,7 @@ export function VideoPlayerSection({
             !processedAdTimestamps.has(Math.floor(adTimestamp)) &&
             ad.adVideo?.hls?.video_url
           ) {
-            console.log(
-              "Triggering ad at",
-              currentSecond,
-              "for timestamp",
-              adTimestamp
-            );
+            console.log("Triggering ad at", currentSecond, "for timestamp", adTimestamp);
             console.log("Ad video URL:", ad.adVideo?.hls?.video_url);
             playAd(ad, video.currentTime);
             break;
@@ -153,9 +147,7 @@ export function VideoPlayerSection({
     mainVideoTimeBeforeAd.current = mainVideoTime;
 
     // Mark this ad timestamp as processed
-    setProcessedAdTimestamps((prev) =>
-      new Set(prev).add(Math.floor(ad.placement_timestamp || 0))
-    );
+    setProcessedAdTimestamps((prev) => new Set(prev).add(Math.floor(ad.placement_timestamp || 0)));
 
     // Setup and play ad
     setCurrentAd(ad);
@@ -210,7 +202,7 @@ export function VideoPlayerSection({
   return (
     <>
       {/* Video Player */}
-      <div className="relative bg-black flex items-center justify-center">
+      <div className="relative bg-black flex items-center justify-center w-full aspect-video">
         {/* Main Video */}
         <video
           ref={mainVideoRef}
@@ -223,19 +215,14 @@ export function VideoPlayerSection({
         </video>
 
         {/* Ad Video - Always rendered but hidden when not playing */}
-        <div
-          className={`relative w-full h-full ${!isPlayingAd ? "hidden" : ""}`}
-        >
+        <div className={`relative w-full h-full ${!isPlayingAd ? "hidden" : ""}`}>
           <video
             ref={adVideoRef}
             className="h-full w-full"
             poster={currentAd?.adVideo?.hls?.thumbnail_urls?.[0]}
           >
             {currentAd?.adVideo?.hls?.video_url && (
-              <source
-                src={currentAd.adVideo.hls.video_url}
-                type="application/x-mpegURL"
-              />
+              <source src={currentAd.adVideo.hls.video_url} type="application/x-mpegURL" />
             )}
             Your browser does not support the video tag.
           </video>
@@ -279,7 +266,7 @@ export function VideoPlayerSection({
         </div>
       </div>
 
-      {/* Timeline - Only show if we have suggested ads and video is ready */}
+      {/* Timeline - Separate component below video */}
       {suggestedAds && suggestedAds.length > 0 && (
         <VideoTimeline
           duration={duration}

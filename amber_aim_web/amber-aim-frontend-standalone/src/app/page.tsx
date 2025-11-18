@@ -349,6 +349,7 @@ export default function Home() {
             />
           </div>
         )}
+        {JSON.stringify({breakPoints, videoUrl})}
       </main>
     </div>
   );

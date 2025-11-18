@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { VideoPlayerSection } from "@/components/video-player-section";
+import { VideoPlayerWithSharedTimeline } from "@/components/video-player-with-shared-timeline";
 import { AdPlacementCard } from "@/components/ad-placement-card";
 import { AnalyzeVideoSection } from "@/components/analyze-video-section";
 import { AnalyzeButton } from "@/components/analyze-button";
@@ -115,108 +115,115 @@ export default async function VideoDetailsPage({
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-4">
-        <div className="space-y-4">
-          {/* Video Player Section */}
-          <Card className="overflow-hidden">
-            {video.hls?.video_url ? (
-              <VideoPlayerSection
-                videoUrl={video.hls.video_url}
-                posterUrl={video.hls.thumbnail_urls?.[0]}
-                duration={videoDuration}
-                suggestedAds={transformedAds}
-              />
-            ) : (
-              <div className="relative bg-black max-h-[400px] flex items-center justify-center">
-                <div className="flex h-full items-center justify-center text-white">
-                  <div className="text-center">
-                    <div className="mb-4 inline-block h-12 w-12 animate-spin rounded-full border-4 border-blue-500 border-t-transparent" />
-                    <p className="text-sm">Processing video...</p>
+        {/* Title Section - Spans full width at top */}
+        {transformedAds && transformedAds.length > 0 && (
+          <div className="mb-6">
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+              Recommended Ad Placements
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              AI-powered ad suggestions based on video content analysis
+            </p>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          {/* Left Column: Video Player & Timeline (narrower on large screens) */}
+          <div className="lg:col-span-4 space-y-4">
+            {/* Video Player Card */}
+            <Card className="overflow-hidden">
+              {video.hls?.video_url ? (
+                <div className="w-full max-w-full">
+                  <VideoPlayerWithSharedTimeline
+                    videoUrl={video.hls.video_url}
+                    posterUrl={video.hls.thumbnail_urls?.[0]}
+                    duration={videoDuration}
+                    suggestedAds={transformedAds}
+                  />
+                </div>
+              ) : (
+                <div className="relative bg-black aspect-video flex items-center justify-center max-w-full">
+                  <div className="flex h-full items-center justify-center text-white">
+                    <div className="text-center">
+                      <div className="mb-4 inline-block h-12 w-12 animate-spin rounded-full border-4 border-blue-500 border-t-transparent" />
+                      <p className="text-sm">Processing video...</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
-            <CardContent className="p-4">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
-                    {video.system_metadata?.filename ||
-                      video.metadata?.filename ||
-                      `Video ${video.id}`}
-                  </h2>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 font-mono">
-                    Video ID: {video.id}
-                  </p>
-                </div>
-                <AnalyzeButton videoId={videoId} />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
-                <div className="flex items-center gap-2 p-2 bg-blue-50 dark:bg-blue-950 rounded-lg">
-                  <Clock className="h-5 w-5 text-blue-600" />
-                  <div>
-                    <p className="text-xs text-gray-600 dark:text-gray-400">
-                      Duration
-                    </p>
-                    <p className="font-semibold text-gray-900 dark:text-white">
-                      {formatDuration(
-                        video.system_metadata?.duration ||
-                          video.metadata?.duration
-                      )}
+              )}
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
+                      {video.system_metadata?.filename ||
+                        video.metadata?.filename ||
+                        `Video ${video.id}`}
+                    </h2>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 font-mono">
+                      Video ID: {video.id}
                     </p>
                   </div>
+                  <AnalyzeButton videoId={videoId} />
                 </div>
 
-                <div className="flex items-center gap-2 p-2 bg-blue-50 dark:bg-blue-950 rounded-lg">
-                  <Calendar className="h-5 w-5 text-blue-600" />
-                  <div>
-                    <p className="text-xs text-gray-600 dark:text-gray-400">
-                      Created
-                    </p>
-                    <p className="font-semibold text-gray-900 dark:text-white">
-                      {formatDate(video.created_at)}
-                    </p>
+                <div className="grid grid-cols-1 gap-2 mt-4">
+                  <div className="flex items-center gap-2 p-2 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <Clock className="h-4 w-4 text-blue-600" />
+                    <div>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">
+                        Duration
+                      </p>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                        {formatDuration(
+                          video.system_metadata?.duration ||
+                            video.metadata?.duration
+                        )}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 p-2 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <Calendar className="h-4 w-4 text-blue-600" />
+                    <div>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">
+                        Created
+                      </p>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                        {formatDate(video.created_at)}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 p-2 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <div className="h-4 w-4 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs">
+                      ✓
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">
+                        Status
+                      </p>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                        {video.indexed_at ? "Indexed" : "Processing"}
+                      </p>
+                    </div>
                   </div>
                 </div>
+              </CardContent>
+            </Card>
+          </div>
 
-                <div className="flex items-center gap-2 p-2 bg-blue-50 dark:bg-blue-950 rounded-lg">
-                  <div className="h-5 w-5 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs">
-                    ✓
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-600 dark:text-gray-400">
-                      Status
-                    </p>
-                    <p className="font-semibold text-gray-900 dark:text-white">
-                      {video.indexed_at ? "Indexed" : "Processing"}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Recommended Ad Placements */}
-          {transformedAds && transformedAds.length > 0 && (
-            <div>
-              <div className="mb-3">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
-                  Recommended Ad Placements
-                </h3>
-                <p className="text-xs text-gray-600 dark:text-gray-400">
-                  AI-powered ad suggestions based on video content analysis
-                </p>
-              </div>
-
-              <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2">
+          {/* Right Column: Recommended Ad Placements (wider on large screens) */}
+          <div className="lg:col-span-8">
+            {transformedAds && transformedAds.length > 0 ? (
+              <div className="grid gap-4">
                 {transformedAds.map((ad, index) => (
                   <AdPlacementCard key={index} ad={ad} index={index} />
                 ))}
               </div>
-            </div>
-          )}
-
-          {/* No Ads Available State */}
-          {!suggestedAds && <AnalyzeVideoSection videoId={videoId} />}
+            ) : (
+              <AnalyzeVideoSection videoId={videoId} />
+            )}
+          </div>
         </div>
       </main>
 
