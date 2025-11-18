@@ -4,16 +4,14 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { VideoPlayerWithSharedTimeline } from "@/components/video-player-with-shared-timeline";
 import { AdPlacementCard } from "@/components/ad-placement-card";
 import { AnalyzeVideoSection } from "@/components/analyze-video-section";
 import { AnalyzeButton } from "@/components/analyze-button";
+import { VideoAnalysisOverview } from "@/components/video-analysis-overview";
 import { fetchVideo, fetchSuggestedAds } from "@/actions/video";
+import type { AdSearchResponse, SuggestedAd, VideoVector } from "@/lib/types";
 
 interface VideoDetailsPageProps {
   params: Promise<{
@@ -61,32 +59,70 @@ export default async function VideoDetailsPage({
   // Hardcoded ad index ID
   const adIndexId = "68e185ef64ff05606e152638";
 
-  // Transform placements - for each placement, get the corresponding ad
-  const transformedAds = await Promise.all(
-    (suggestedAds?.placements || []).map(async (placement, idx) => {
-      const ad = suggestedAds?.suggested_ads?.[idx];
-      if (!ad) return null;
+  // Collect all unique Ad Video IDs to fetch
+  const adVideoIds = new Set<string>();
+  suggestedAds?.suggested_ads?.forEach((response: AdSearchResponse) => {
+    response.data.forEach(queryData => {
+      queryData.results.forEach(result => {
+        if (result.id) adVideoIds.add(result.id);
+      });
+    });
+  });
 
-      // Fetch the ad video
-      let adVideo = null;
-      if (ad.id) {
-        try {
-          adVideo = await fetchVideo(adIndexId, ad.id);
-        } catch (error) {
-          console.log(`Failed to fetch ad video ${ad.id}`);
+  // Fetch ad videos in parallel
+  const adVideosMap = new Map<string, VideoVector>();
+  // We limit concurrency implicitly by Promise.all, but if there are too many, this might need chunking. 
+  // Assuming manageable amount for now (< 50).
+  await Promise.all(Array.from(adVideoIds).map(async (id) => {
+    try {
+      const adVideo = await fetchVideo(adIndexId, id);
+      adVideosMap.set(id, adVideo);
+    } catch (error) {
+      console.log(`Failed to fetch ad video ${id}`);
+    }
+  }));
+
+  // Hydrate the ads with video details for the UI
+  const hydratedAds: AdSearchResponse[] = suggestedAds?.suggested_ads?.map((response: AdSearchResponse) => ({
+    ...response,
+    data: response.data.map(queryData => ({
+      ...queryData,
+      results: queryData.results.map(result => ({
+        ...result,
+        adVideo: adVideosMap.get(result.id) || null
+      }))
+    }))
+  })) || [];
+
+  // Create simplified list for the timeline player (pick the best/first ad for each placement)
+  const timelineAds: SuggestedAd[] = hydratedAds.map(ad => {
+    // Find the first available ad from the first query as the default
+    // Better logic could be: find ad with highest score across all queries
+    let bestAd = null;
+    let bestScore = -1;
+
+    for (const q of ad.data) {
+      for (const r of q.results) {
+        const score = r.clips[0]?.score || 0;
+        if (score > bestScore && r.adVideo?.hls?.video_url) {
+          bestScore = score;
+          bestAd = r;
         }
       }
+    }
+    
+    // Fallback to first result if no video found (to at least show marker)
+    if (!bestAd && ad.data[0]?.results[0]) {
+        bestAd = ad.data[0].results[0];
+    }
 
-      return {
-        ...ad,
-        placement_timestamp: placement.timestamp,
-        ad_video_id: ad.id,
-        score: ad.clips?.[0]?.score,
-        adVideo: adVideo,
-        placement: placement,
-      };
-    })
-  ).then((ads) => ads.filter((ad) => ad !== null)); // Remove any null entries
+    return {
+      placement_timestamp: ad.placement.timestamp,
+      adVideo: bestAd?.adVideo || null,
+      ad_video_id: bestAd?.id,
+      ad_name: bestAd?.adVideo?.metadata?.filename
+    };
+  }).filter(ad => ad !== null);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-950 dark:to-gray-900">
@@ -115,22 +151,21 @@ export default async function VideoDetailsPage({
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-4">
-        {/* Title Section - Spans full width at top */}
-        {transformedAds && transformedAds.length > 0 && (
+        {/* Title Section */}
+        {hydratedAds && hydratedAds.length > 0 && (
           <div className="mb-6">
             <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-              Recommended Ad Placements
+              Video Analysis & Ad Placements
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              AI-powered ad suggestions based on video content analysis
+              Detailed breakdown of narrative structure and recommended ad strategies
             </p>
           </div>
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-          {/* Left Column: Video Player & Timeline (narrower on large screens) */}
+          {/* Left Column: Video Player & Timeline */}
           <div className="lg:col-span-4 space-y-4">
-            {/* Video Player Card */}
             <Card className="overflow-hidden">
               {video.hls?.video_url ? (
                 <div className="w-full max-w-full">
@@ -138,7 +173,7 @@ export default async function VideoDetailsPage({
                     videoUrl={video.hls.video_url}
                     posterUrl={video.hls.thumbnail_urls?.[0]}
                     duration={videoDuration}
-                    suggestedAds={transformedAds}
+                    suggestedAds={timelineAds}
                   />
                 </div>
               ) : (
@@ -212,13 +247,19 @@ export default async function VideoDetailsPage({
             </Card>
           </div>
 
-          {/* Right Column: Recommended Ad Placements (wider on large screens) */}
+          {/* Right Column: Recommended Ad Placements */}
           <div className="lg:col-span-8">
-            {transformedAds && transformedAds.length > 0 ? (
+            {hydratedAds && hydratedAds.length > 0 ? (
               <div className="grid gap-4">
-                {transformedAds.map((ad, index) => (
-                  <AdPlacementCard key={index} ad={ad} index={index} />
-                ))}
+                {suggestedAds?.placements_result && (
+                  <VideoAnalysisOverview result={suggestedAds.placements_result} />
+                )}
+                
+                <div className="space-y-6">
+                  {hydratedAds.map((ad, index) => (
+                    <AdPlacementCard key={index} response={ad} index={index} />
+                  ))}
+                </div>
               </div>
             ) : (
               <AnalyzeVideoSection videoId={videoId} />
@@ -226,8 +267,6 @@ export default async function VideoDetailsPage({
           </div>
         </div>
       </main>
-
-      <pre>{JSON.stringify({suggestedAds, video}, null, 2)}</pre>
     </div>
   );
 }
