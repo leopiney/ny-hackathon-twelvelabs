@@ -2,6 +2,18 @@
 
 FastAPI backend service that generates secure, time-limited AWS S3 presigned URLs for direct video uploads.
 
+## 🐳 Docker Deployment
+
+**Quick Start with Docker**: See [README.Docker.md](./README.Docker.md) for complete Docker and fly.io deployment instructions.
+
+```bash
+# Build and run with Docker Compose
+docker-compose up
+
+# Or deploy to fly.io
+fly deploy
+```
+
 ## Features
 
 - ✅ **Presigned S3 URLs**: Generate secure, time-limited URLs for direct S3 uploads

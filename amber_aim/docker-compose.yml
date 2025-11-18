@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      # AWS Configuration
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_S3_BUCKET=${AWS_S3_BUCKET}
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+      
+      # TwelveLabs Configuration
+      - TWELVE_LABS_API_KEY=${TWELVE_LABS_API_KEY}
+      - TWELVE_LABS_CREATORS_INDEX_ID=${TWELVE_LABS_CREATORS_INDEX_ID}
+      - TWELVE_LABS_ADS_INDEX_ID=${TWELVE_LABS_ADS_INDEX_ID}
+      
+      # OpenAI Configuration
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      
+      # Application Configuration
+      - ENV=${ENV:-development}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - S3_BASE_PATH=${S3_BASE_PATH:-videos}
+      - UPLOAD_URL_EXPIRATION=${UPLOAD_URL_EXPIRATION:-1800}
+    
+    volumes:
+      # Mount local results directory for development (optional)
+      - ./results:/app/results
+    
+    restart: unless-stopped
+    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
