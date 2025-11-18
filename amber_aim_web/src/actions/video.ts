@@ -4,15 +4,12 @@ import {
   getIndexes,
   getIndexVideos,
   getVideo,
-  generateUploadUrl,
   analyzeVideo,
   suggestAds,
 } from "@/lib/api";
 import type {
   IndexSchema,
   VideoVector,
-  UploadURLRequest,
-  UploadURLResponse,
   AnalyzeRequest,
   AnalyzeResponse,
   SuggestAdsRequest,
@@ -47,18 +44,6 @@ export async function fetchVideo(
     return await getVideo(indexId, videoId);
   } catch (error) {
     console.error(`Error fetching video ${videoId}:`, error);
-    throw error;
-  }
-}
-
-export async function createUploadUrl(
-  filename: string
-): Promise<UploadURLResponse> {
-  try {
-    const request: UploadURLRequest = { filename };
-    return await generateUploadUrl(request);
-  } catch (error) {
-    console.error("Error creating upload URL:", error);
     throw error;
   }
 }

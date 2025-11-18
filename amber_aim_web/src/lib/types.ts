@@ -35,17 +35,6 @@ export interface VideoVector {
   };
 }
 
-export interface UploadURLRequest {
-  filename: string;
-}
-
-export interface UploadURLResponse {
-  upload_url: string;
-  s3_path: string;
-  expires_at: string;
-  expires_in: number;
-}
-
 export interface AnalyzeRequest {
   video_path?: string;
   video_id?: string;

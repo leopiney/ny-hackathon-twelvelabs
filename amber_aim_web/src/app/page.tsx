@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Video, PlayCircle, TrendingUp } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -9,7 +8,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { UploadDialog } from "@/components/upload-dialog";
 import { fetchIndexes, fetchIndexVideos } from "@/actions/video";
 
 export default async function DashboardPage() {
@@ -47,7 +45,6 @@ export default async function DashboardPage() {
                 </p>
               </div>
             </div>
-            <UploadDialog />
           </div>
         </div>
       </header>
