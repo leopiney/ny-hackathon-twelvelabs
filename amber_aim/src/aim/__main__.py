@@ -6,6 +6,8 @@ import uvicorn
 from aim.config import Settings
 
 if __name__ == "__main__":
+    os.makedirs("data", exist_ok=True)
+
     settings = Settings()
     # Disable reload in production (Docker)
     is_dev = os.getenv("ENV", "production") == "development"

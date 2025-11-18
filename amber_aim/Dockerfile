@@ -34,6 +34,9 @@ COPY README.md ./
 # Sync the project
 RUN uv sync --frozen
 
+# For temp data directory
+RUN mkdir -p /app/data
+
 # Expose port 8000 for FastAPI
 EXPOSE 8000
 
