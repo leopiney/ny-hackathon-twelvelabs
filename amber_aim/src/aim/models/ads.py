@@ -2,7 +2,7 @@
 
 from pydantic import BaseModel
 
-from aim.models.placement import Placement
+from aim.models.placement import Placement, PlacementResult
 
 
 class AdClip(BaseModel):
@@ -31,11 +31,18 @@ class AdSearchResult(BaseModel):
         return sum(clip.score for clip in self.clips) / len(self.clips)
 
 
-class AdSearchResponse(BaseModel):
+class AdSearchResponseData(BaseModel):
     """Response model for ad search containing multiple results."""
 
     results: list[AdSearchResult]
     query: str
+
+
+class AdSearchResponse(BaseModel):
+    """Response model for ad search containing multiple results."""
+
+    data: list[AdSearchResponseData]
+    placement: Placement
 
 
 class SuggestAdsRequest(BaseModel):
@@ -48,6 +55,6 @@ class SuggestAdsResponse(BaseModel):
     """Response model for suggested ads."""
 
     video_id: str
-    suggested_ads: list[AdSearchResult]
+    suggested_ads: list[AdSearchResponse]
     placement_count: int
-    placements: list[Placement] | None = None
+    placements_result: PlacementResult | None = None

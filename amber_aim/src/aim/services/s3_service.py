@@ -143,12 +143,12 @@ class S3Service:
         except Exception as e:
             return None
 
-    def upload_json_file(self, s3_path: str, data: dict[str, str]) -> None:
+    def upload_json_file(self, s3_path: str, data: Any) -> None:
         """Upload a JSON file to S3.
 
         Args:
             s3_path: S3 path of the JSON file
-            data: Data to upload
+            data: Data to upload (any JSON-serializable object)
 
         Returns:
             None

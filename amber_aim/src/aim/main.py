@@ -1,5 +1,6 @@
 """FastAPI application for video upload URL generation."""
 
+import json
 import logging
 from datetime import datetime, timezone
 from typing import Literal, Any
@@ -297,10 +298,13 @@ async def suggest_ads(request: SuggestAdsRequest) -> SuggestAdsResponse:
         # Create response
         response = SuggestAdsResponse(
             video_id=request.video_id,
-            suggested_ads=ads_response.results,
+            suggested_ads=ads_response,  # Already a list
             placement_count=len(placement_result.placements),
-            placements=placement_result.placements,
+            placements_result=placement_result,
         )
+
+        with open(f"data/suggest_ads_{request.video_id}.json", "w") as f:
+            json.dump(response.model_dump(), f, indent=2)
 
         logger.info(
             "Ads suggestion completed",

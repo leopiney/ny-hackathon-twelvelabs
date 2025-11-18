@@ -227,7 +227,7 @@ export default async function VideoDetailsPage({
         </div>
       </main>
 
-      {/* <div>{JSON.stringify(suggestedAds, null, 2)}</div> */}
+      <pre>{JSON.stringify({suggestedAds, video}, null, 2)}</pre>
     </div>
   );
 }
