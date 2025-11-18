@@ -70,7 +70,11 @@ def health_check() -> dict[str, str]:
     Returns:
         Health status and current timestamp
     """
-    return {"status": "healthy", "timestamp": datetime.now(timezone.utc).isoformat()}
+    return {
+        "version": "2.0.0",
+        "status": "healthy",
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
 
 
 @app.post("/upload", response_model=UploadURLResponse)
