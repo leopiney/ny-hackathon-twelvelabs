@@ -1,17 +1,27 @@
-import Link from "next/link";
 import { Video, PlayCircle, TrendingUp } from "lucide-react";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { fetchIndexes, fetchIndexVideos } from "@/actions/video";
+import { VideoGridItem } from "@/components/video-grid-item";
 
 export default async function DashboardPage() {
-  const indexes = await fetchIndexes();
+  const CREATOR_INDEX_ID = process.env.APP_TWELVE_LABS_CREATORS_INDEX_ID;
+  const ADS_INDEX_ID = process.env.APP_TWELVE_LABS_ADS_INDEX_ID;
+  
+  // Define target indexes in desired order
+  const targetIndexIds = [CREATOR_INDEX_ID, ADS_INDEX_ID].filter(Boolean) as string[];
+
+  const allIndexes = await fetchIndexes();
+  
+  // Filter and sort indexes to match the order in targetIndexIds
+  const indexes = targetIndexIds
+    .map(id => allIndexes.find(index => index.id === id))
+    .filter((index): index is NonNullable<typeof index> => !!index);
 
   // Fetch videos for each index
   const indexesWithVideos = await Promise.all(
@@ -26,8 +36,20 @@ export default async function DashboardPage() {
     })
   );
 
+  const getIndexType = (indexId: string): "creator" | "ad" => {
+    if (indexId === ADS_INDEX_ID) return "ad";
+    return "creator";
+  };
+
+  const getIndexDisplayName = (indexId: string, originalName: string) => {
+    const type = getIndexType(indexId);
+    if (type === "ad") return "Ads Library";
+    if (type === "creator") return "Creator Content";
+    return originalName;
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-950 dark:to-gray-900">
+    <div className="min-h-screen bg-linear-to-b from-blue-50 to-white dark:from-gray-950 dark:to-gray-900">
       {/* Header */}
       <header className="border-b border-blue-100 bg-white/80 backdrop-blur-sm dark:border-gray-800 dark:bg-gray-950/80">
         <div className="container mx-auto px-4 py-6">
@@ -53,7 +75,7 @@ export default async function DashboardPage() {
       <main className="container mx-auto px-4 py-8">
         {/* Stats Overview */}
         <div className="mb-8 grid gap-4 md:grid-cols-3">
-          <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-white dark:border-blue-900 dark:from-blue-950 dark:to-gray-950">
+          <Card className="border-blue-200 bg-linear-to-br from-blue-50 to-white dark:border-blue-900 dark:from-blue-950 dark:to-gray-950">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 Total Indexes
@@ -67,7 +89,7 @@ export default async function DashboardPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-white dark:border-blue-900 dark:from-blue-950 dark:to-gray-950">
+          <Card className="border-blue-200 bg-linear-to-br from-blue-50 to-white dark:border-blue-900 dark:from-blue-950 dark:to-gray-950">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 Total Videos
@@ -84,7 +106,7 @@ export default async function DashboardPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-white dark:border-blue-900 dark:from-blue-950 dark:to-gray-950">
+          <Card className="border-blue-200 bg-linear-to-br from-blue-50 to-white dark:border-blue-900 dark:from-blue-950 dark:to-gray-950">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 Active Indexes
@@ -105,9 +127,11 @@ export default async function DashboardPage() {
             <div key={index.id}>
               <div className="mb-4 flex items-center justify-between">
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                    {index.name}
-                  </h2>
+                  <div className="flex items-center gap-3">
+                    <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+                      {getIndexDisplayName(index.id, index.name)}
+                    </h2>
+                  </div>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     Index ID: {index.id}
                   </p>
@@ -121,45 +145,12 @@ export default async function DashboardPage() {
               {index.videos.length > 0 ? (
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {index.videos.map((video) => (
-                    <Link
+                    <VideoGridItem
                       key={video.id}
-                      href={`/video/${index.id}/${video.id}`}
-                      className="group"
-                    >
-                      <Card className="overflow-hidden transition-all hover:shadow-lg hover:shadow-blue-100 dark:hover:shadow-blue-900/20">
-                        <div className="relative aspect-video bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-950">
-                          {video.hls?.thumbnail_urls?.[0] ? (
-                            <img
-                              src={video.hls.thumbnail_urls[0]}
-                              alt={
-                                video.metadata?.filename || "Video thumbnail"
-                              }
-                              className="h-full w-full object-cover"
-                            />
-                          ) : (
-                            <div className="flex h-full items-center justify-center">
-                              <PlayCircle className="h-12 w-12 text-blue-600" />
-                            </div>
-                          )}
-                          <div className="absolute inset-0 bg-black/0 transition-all group-hover:bg-black/10" />
-                        </div>
-                        <CardHeader>
-                          <CardTitle className="line-clamp-1 text-base">
-                            {video.metadata?.filename ||
-                              `Video ${video.id.slice(0, 8)}`}
-                          </CardTitle>
-                          <CardDescription className="text-xs">
-                            {video.metadata?.duration
-                              ? `${Math.floor(
-                                  video.metadata.duration / 60
-                                )}:${String(
-                                  Math.floor(video.metadata.duration % 60)
-                                ).padStart(2, "0")}`
-                              : "Duration unknown"}
-                          </CardDescription>
-                        </CardHeader>
-                      </Card>
-                    </Link>
+                      video={video}
+                      indexId={index.id}
+                      type={getIndexType(index.id)}
+                    />
                   ))}
                 </div>
               ) : (
@@ -181,10 +172,10 @@ export default async function DashboardPage() {
             <CardContent className="flex flex-col items-center justify-center py-16">
               <Video className="mb-4 h-16 w-16 text-gray-400" />
               <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
-                No indexes found
+                No configured indexes found
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Upload your first video to get started
+                Please check your environment configuration
               </p>
             </CardContent>
           </Card>

@@ -92,3 +92,30 @@ export async function suggestAds(
 
   return response.json();
 }
+
+// Thumbnail API
+export async function refreshThumbnail(
+  videoId: string,
+  thumbnailUrl: string
+): Promise<string | null> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/thumbnail/refresh`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ video_id: videoId, thumbnail_url: thumbnailUrl }),
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const data = await response.json();
+    return data.thumbnail_url;
+  } catch (error) {
+    console.error("Error refreshing thumbnail:", error);
+    return null;
+  }
+}

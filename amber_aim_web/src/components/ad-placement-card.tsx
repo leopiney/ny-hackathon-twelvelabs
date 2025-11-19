@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import type { AdSearchResponse, AdSearchResult, AdClip } from "@/lib/types";
 import { Play, Pause, ChevronRight, ChevronLeft } from "lucide-react";
+import { RefreshableThumbnail } from "@/components/refreshable-thumbnail";
 
 interface AdPlacementCardProps {
   response: AdSearchResponse;
@@ -99,8 +100,9 @@ export function AdPlacementCard({ response, index }: AdPlacementCardProps) {
                   >
                     <div className="w-20 h-12 bg-gray-200 rounded overflow-hidden flex-shrink-0 relative">
                       {result.clips[0]?.thumbnail_url ? (
-                        <img 
-                          src={result.clips[0].thumbnail_url} 
+                        <RefreshableThumbnail 
+                          videoId={result.id}
+                          initialUrl={result.clips[0].thumbnail_url} 
                           alt="Ad thumbnail" 
                           className="w-full h-full object-cover"
                         />
