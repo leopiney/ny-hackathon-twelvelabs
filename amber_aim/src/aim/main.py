@@ -12,7 +12,12 @@ from twelvelabs import IndexSchema, VideoVector
 
 from aim.config import Settings
 from aim.logging_config import setup_logging
-from aim.models.ads import SuggestAdsRequest, SuggestAdsResponse
+from aim.models.ads import (
+    SuggestAdsRequest,
+    SuggestAdsResponse,
+    RefreshThumbnailRequest,
+    RefreshThumbnailResponse,
+)
 from aim.models.analyze import AnalyzeRequest, AnalyzeResponse
 from aim.models.placement import PlacementResult
 from aim.models.upload import UploadURLRequest, UploadURLResponse
@@ -337,6 +342,29 @@ async def suggest_ads(request: SuggestAdsRequest) -> SuggestAdsResponse:
                 "detail": "Internal server error",
                 "error_code": "INTERNAL_ERROR",
             },
+        ) from e
+
+
+@app.post("/thumbnail/refresh", response_model=RefreshThumbnailResponse)
+def refresh_thumbnail(request: RefreshThumbnailRequest) -> RefreshThumbnailResponse:
+    """Refresh an expired thumbnail URL.
+
+    Args:
+        request: Request containing video_id and expired thumbnail_url
+
+    Returns:
+        RefreshThumbnailResponse with fresh thumbnail URL
+    """
+    try:
+        fresh_url = twelve_labs_service.get_fresh_thumbnail_url(
+            request.video_id, request.thumbnail_url
+        )
+        return RefreshThumbnailResponse(thumbnail_url=fresh_url)
+    except Exception as e:
+        logger.error("Error refreshing thumbnail", exc_info=True)
+        raise HTTPException(
+            status_code=500,
+            detail={"detail": str(e), "error_code": "THUMBNAIL_REFRESH_ERROR"},
         ) from e
 
 

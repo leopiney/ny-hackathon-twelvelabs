@@ -58,3 +58,16 @@ class SuggestAdsResponse(BaseModel):
     suggested_ads: list[AdSearchResponse]
     placement_count: int
     placements_result: PlacementResult | None = None
+
+
+class RefreshThumbnailRequest(BaseModel):
+    """Request model for refreshing a thumbnail URL."""
+
+    video_id: str
+    thumbnail_url: str
+
+
+class RefreshThumbnailResponse(BaseModel):
+    """Response model for refreshing a thumbnail URL."""
+
+    thumbnail_url: str | None

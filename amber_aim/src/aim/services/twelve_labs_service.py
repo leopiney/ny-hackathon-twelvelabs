@@ -386,3 +386,37 @@ class TwelveLabsService:
                 f"Failed to search ads: {str(e)}",
                 error_code="SEARCH_ERROR",
             ) from e
+
+    def get_fresh_thumbnail_url(self, video_id: str, old_thumbnail_url: str) -> str | None:
+        """Get a fresh thumbnail URL for a video given an expired one.
+
+        Args:
+            video_id: ID of the video
+            old_thumbnail_url: The expired thumbnail URL
+
+        Returns:
+            Fresh thumbnail URL or None if not found
+        """
+        try:
+            video = self.client.indexes.videos.retrieve(
+                index_id=self.ads_index_id,
+                video_id=video_id,
+            )
+
+            if not video.hls or not video.hls.thumbnail_urls:
+                return None
+
+            # Extract filename from old URL (ignoring query params)
+            # Format: .../thumbnails/{timestamp}.jpeg
+            filename = old_thumbnail_url.split("?")[0].split("/")[-1]
+
+            for url in video.hls.thumbnail_urls:
+                if url.split("?")[0].endswith(filename):
+                    return url
+
+            # Fallback: return the first one if no match found
+            return video.hls.thumbnail_urls[0] if video.hls.thumbnail_urls else None
+
+        except Exception:
+            logger.error("Failed to get fresh thumbnail URL", exc_info=True)
+            return None
