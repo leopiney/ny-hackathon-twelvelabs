@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,25 @@ interface AdPlacementCardProps {
 }
 
 export function AdPlacementCard({ response, index }: AdPlacementCardProps) {
-  const [activeQueryIndex, setActiveQueryIndex] = useState(0);
+  // Find the strategy index with the highest scoring clip
+  const { bestStrategyIndex, maxScore } = useMemo(() => {
+    let max = -1;
+    let bestIdx = 0;
+    
+    response.data.forEach((query, qIdx) => {
+      query.results.forEach((result) => {
+        const score = result.clips[0]?.score || 0;
+        if (score > max) {
+          max = score;
+          bestIdx = qIdx;
+        }
+      });
+    });
+    
+    return { bestStrategyIndex: bestIdx, maxScore: max };
+  }, [response.data]);
+
+  const [activeQueryIndex, setActiveQueryIndex] = useState(bestStrategyIndex);
   const [activeAdIndex, setActiveAdIndex] = useState<Record<number, number>>({});
 
   const placement = response.placement;
@@ -72,8 +90,10 @@ export function AdPlacementCard({ response, index }: AdPlacementCardProps) {
                     onClick={() => setActiveQueryIndex(i)}
                     className={`text-xs px-3 py-1.5 rounded-full transition-colors text-left truncate max-w-full ${
                       activeQueryIndex === i
-                        ? "bg-blue-600 text-white shadow-sm"
-                        : "bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300"
+                        ? (i === bestStrategyIndex ? "bg-yellow-500 text-white shadow-sm" : "bg-blue-600 text-white shadow-sm")
+                        : (i === bestStrategyIndex 
+                            ? "bg-yellow-100 text-yellow-900 hover:bg-yellow-300 dark:bg-yellow-900/40 dark:text-yellow-100 dark:hover:bg-yellow-900/60" 
+                            : "bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300")
                     }`}
                   >
                     Strategy {i + 1}
@@ -117,7 +137,10 @@ export function AdPlacementCard({ response, index }: AdPlacementCardProps) {
                         <span className="text-sm font-medium truncate block">
                           {result.adVideo?.metadata?.filename || result.adVideo?.system_metadata?.filename || `Ad ${result.id.slice(0, 6)}`}
                         </span>
-                        <Badge variant={result.clips[0].score > 75 ? "default" : "secondary"} className="text-[10px] h-5">
+                        <Badge 
+                          variant={result.clips[0].score > 75 && result.clips[0].score !== maxScore ? "default" : "secondary"} 
+                          className={`text-[10px] h-5 ${result.clips[0].score === maxScore ? "bg-yellow-500 text-white hover:bg-yellow-600" : ""}`}
+                        >
                           {result.clips[0].score.toFixed(0)}%
                         </Badge>
                       </div>
