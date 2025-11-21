@@ -302,6 +302,7 @@ async def suggest_ads(request: SuggestAdsRequest) -> SuggestAdsResponse:
             s3_service,
             placement_result,
             twelve_labs_service.search_ads,
+            force=request.force,
         )
 
         # Create response

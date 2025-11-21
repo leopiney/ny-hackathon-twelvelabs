@@ -49,6 +49,7 @@ class SuggestAdsRequest(BaseModel):
     """Request model for suggesting ads for a video."""
 
     video_id: str
+    force: bool = False
 
 
 class SuggestAdsResponse(BaseModel):

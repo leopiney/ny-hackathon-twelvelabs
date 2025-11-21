@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
-import { analyzeVideo } from "@/lib/api";
+import { suggestAds } from "@/lib/api";
 
 interface AnalyzeButtonProps {
   videoId: string;
@@ -18,9 +18,9 @@ export function AnalyzeButton({ videoId }: AnalyzeButtonProps) {
     setError(null);
 
     try {
-      await analyzeVideo({
+      await suggestAds({
         video_id: videoId,
-        type: "creator",
+        force: true,
       });
 
       // Refresh the page after a short delay to show updated status
@@ -28,7 +28,7 @@ export function AnalyzeButton({ videoId }: AnalyzeButtonProps) {
         window.location.reload();
       }, 2000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Analysis failed");
+      setError(err instanceof Error ? err.message : "Re-analysis failed");
       setIsAnalyzing(false);
     }
   };
@@ -42,7 +42,7 @@ export function AnalyzeButton({ videoId }: AnalyzeButtonProps) {
         disabled={isAnalyzing}
       >
         <Sparkles className="h-4 w-4" />
-        {isAnalyzing ? "Analyzing..." : "Analyze"}
+        {isAnalyzing ? "Re-analyzing..." : "Re-analyze"}
       </Button>
       {error && <p className="text-xs text-red-600">{error}</p>}
     </div>

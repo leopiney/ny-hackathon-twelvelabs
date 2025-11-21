@@ -48,6 +48,7 @@ export interface AnalyzeResponse {
 
 export interface SuggestAdsRequest {
   video_id: string;
+  force?: boolean;
 }
 
 export interface AdClip {

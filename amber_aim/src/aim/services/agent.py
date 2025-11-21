@@ -55,6 +55,7 @@ async def find_best_ads(
     s3_service: S3Service,
     placement_result: PlacementResult,
     search_ads_callback: Callable[[str], list[AdSearchResult]],
+    force: bool = False,
 ) -> list[AdSearchResponse]:
     """Get ads suggestions using an AI agent with search capabilities.
 
@@ -63,6 +64,7 @@ async def find_best_ads(
         s3_service: S3 service instance
         placement_result: The placement analysis result for the video
         search_ads_callback: Callback function to search for ads
+        force: If True, bypass cached results and force re-analysis
 
     Returns:
         List of AdSearchResponse, one per placement
@@ -71,11 +73,14 @@ async def find_best_ads(
     s3_path = f"results/ads_search_v2_{video_id}.json"
     existing_results = s3_service.download_json_file(s3_path)
 
-    if existing_results is not None:
+    if existing_results is not None and not force:
         logger.info(f"Found existing results in S3: {s3_path}")
         return [AdSearchResponse.model_validate(result) for result in existing_results]
 
-    logger.info("No existing results found in S3, proceeding with ad search")
+    if force and existing_results is not None:
+        logger.info(f"Force flag is True, bypassing cached results in S3: {s3_path}")
+
+    logger.info("No existing results found in S3 or force=True, proceeding with ad search")
 
     # Process each placement individually
     all_placement_responses: list[AdSearchResponse] = []
